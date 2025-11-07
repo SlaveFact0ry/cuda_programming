@@ -70,12 +70,12 @@ int main()
 		printf("Time taken: %f ms\n", duration<float, milli>(clock::now() - start).count());
 	}
 
-	if (size < 40) { // 눈으로 봐서 확인 가능한 크기일 때는 출력
-		printVector(a);
-		printVector(b);
-		printVector(cMulti);
-		printVector(cSingle);
-	}
+	// if (size < 40) { // 눈으로 봐서 확인 가능한 크기일 때는 출력
+	printVector(a);
+	printVector(b);
+	printVector(cMulti);
+	printVector(cSingle);
+	// }
 
 	for (int i = 0; i < size; i++)
 		if (cMulti[i] != cSingle[i]) {
