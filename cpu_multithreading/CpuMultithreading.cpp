@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
+#include <cmath>
 
 using namespace std;
 using namespace chrono;
@@ -42,7 +43,7 @@ int main()
 			{
 				for (int i = start; i < end; i++)
 					if (i < size)
-						cMulti[i] = TODO;
+						cMulti[i] = a[i] + b[i];
 			};
 
 		printf("Start multithreading\n");
@@ -55,11 +56,15 @@ int main()
 
 		for (int r = 0; r < 100; r++) // 한 번으로는 CPU 사용량 관찰이 쉽지 않기 때문에 여러 번 반복
 		{
-			//for (int t = 0; t < numThreads; t++)
-			//    threadList[t] = thread(addFunc, TODO, TODO, size);
+			for (int t = 0; t < numThreads; t++)
+			{
+				int start = t * perThread;
+				int end = (t == numThreads - 1) ? size : (t + 1) * perThread;
+				threadList[t] = thread(addFunc, start, end, size);
+			}
 
-			//for (int t = 0; t < numThreads; t++)
-			//    threadList[t].join();
+			for (int t = 0; t < numThreads; t++)
+				threadList[t].join();
 		}
 
 		printf("Time taken: %f ms\n", duration<float, milli>(clock::now() - start).count());

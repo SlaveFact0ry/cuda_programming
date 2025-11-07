@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/jung-yechan/code/cuda_programming/cpu_multithreading/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

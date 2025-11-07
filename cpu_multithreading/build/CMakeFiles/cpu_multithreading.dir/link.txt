@@ -1,0 +1,1 @@
+/usr/bin/g++ -std=c++11 -Wl,-search_paths_first -Wl,-headerpad_max_install_names -L/opt/homebrew/opt/tcl-tk/lib CMakeFiles/cpu_multithreading.dir/CpuMultithreading.cpp.o -o cpu_multithreading
