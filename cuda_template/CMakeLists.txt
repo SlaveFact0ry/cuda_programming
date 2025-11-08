@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(device_info LANGUAGES CXX CUDA)
 
+# Find CUDA Toolkit
+find_package(CUDAToolkit REQUIRED)
+
 # Set CUDA standard
 set(CMAKE_CUDA_STANDARD 14)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
