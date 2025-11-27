@@ -40,8 +40,8 @@ __global__ void atomicSumReductionKernel(float *input, float *output) {
 
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
 
-    output[0] += input[i]; // <- 여러 쓰레드가 경쟁적으로 메모리에 접근하기 때문에 오류 발생
-
+    // output[0] += input[i]; // <- 여러 쓰레드가 경쟁적으로 메모리에 접근하기 때문에 오류 발생
+    atomicAdd(output, input[i]);
     /*
     * 두 개의 쓰레드가 한 메모리 공간을 두고 경쟁(racing) 하는 사례
     * 원래 값 1에다가 쓰레드 2개가 각각 1씩 더해서 3이 되어야 하는 경우
