@@ -78,7 +78,7 @@ __global__ void MatMulKernel(Matrix A, Matrix B, Matrix C) {
     C.elements[row * C.width + col] = Cvalue;
 
 
-    printf("%u %u %u %u %u %u", blockDim.x, blockDim.y, blockIdx.x, blockIdx.y, threadIdx.x, threadIdx.y);
+    // printf("%u %u %u %u %u %u", blockDim.x, blockDim.y, blockIdx.x, blockIdx.y, threadIdx.x, threadIdx.y);
 }
 
 int main() {
