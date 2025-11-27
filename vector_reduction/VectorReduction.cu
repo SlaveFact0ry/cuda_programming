@@ -40,7 +40,7 @@ __global__ void atomicSumReductionKernel(float *input, float *output) {
 
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
 
-    // output[0] += input[i]; // <- 여러 쓰레드가 경쟁적으로 메모리에 접근하기 때문에 오류 발생
+    output[0] += input[i]; // <- 여러 쓰레드가 경쟁적으로 메모리에 접근하기 때문에 오류 발생
 
     /*
     * 두 개의 쓰레드가 한 메모리 공간을 두고 경쟁(racing) 하는 사례
@@ -109,7 +109,7 @@ __global__ void sharedMemorySumReductionKernel(float *input, float *output) {
         if (threadIdx.x < stride) {
             // TODO:
             inputShared[t] = inputShared[t] + inputShared[t + stride];
-            
+
         }
     }
     if (t == 0)
@@ -154,10 +154,10 @@ int main(int argc, char *argv[]) {
     cudaMalloc(&dev_output, sizeof(float));
     cudaMemcpy(dev_input, arr.data(), size * sizeof(float), cudaMemcpyHostToDevice);
 
-    // timedRun("Atomic", [&]() {
-    //     int numBlocks = (size + threadsPerBlock - 1) / threadsPerBlock;
-    //     atomicSumReductionKernel<<<numBlocks, threadsPerBlock>>>(dev_input, dev_output);
-    // }); // 68 ms
+    timedRun("Atomic", [&]() {
+        int numBlocks = (size + threadsPerBlock - 1) / threadsPerBlock;
+        atomicSumReductionKernel<<<numBlocks, threadsPerBlock>>>(dev_input, dev_output);
+    }); // 68 ms
 
     // 주의: size = threadsPerBlock * 2 라고 가정 (블럭 하나만 사용)
     // timedRun("GPU Sum", [&]() {
