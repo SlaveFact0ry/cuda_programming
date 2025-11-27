@@ -91,9 +91,18 @@ __global__ void segmentedSumReductionKernel(float *input, float *output) {
 
     unsigned int segment = 2 * blockDim.x * blockIdx.x;
     unsigned int i = segment + threadIdx.x;
-    unsigned int t = threadIdx.x;
+        unsigned int t = threadIdx.x;
 
-    // TODO: 위의 두 개를 잘 합치면 됩니다.
+    inputShared[t] = input[i] + input[i + blockDim.x];
+
+    for (unsigned int stride = blockDim.x / 2; stride >= 1; stride /= 2) {
+        __syncthreads();
+        if (t < stride) {
+            inputShared[t] += inputShared[t + stride];
+        }
+    }
+    if (t == 0)
+        atomicAdd(output, inputShared[0]);
 }
 
 int main(int argc, char *argv[]) {
@@ -135,17 +144,17 @@ int main(int argc, char *argv[]) {
     //     // 하나일 때만 사용
     // });
 
-    timedRun("GPU Sum", [&]() {
-        sharedMemorySumReductionKernel<<<1, threadsPerBlock, threadsPerBlock * sizeof(float)>>>(
-            dev_input, dev_output); // 블럭이 하나일 때만 사용
-    });
+    // timedRun("GPU Sum", [&]() {
+    //     sharedMemorySumReductionKernel<<<1, threadsPerBlock, threadsPerBlock * sizeof(float)>>>(
+    //         dev_input, dev_output); // 블럭이 하나일 때만 사용
+    // });
     //  kernel<<<블럭수, 쓰레드수, 공유메모리크기>>>(...);
 
-    // timedRun("Segmented", [&]() {
-    //     int numBlocks = TODO; // size 나누기 2 주의
-    //     segmentedSumReductionKernel<<<numBlocks, threadsPerBlock,
-    //                                   threadsPerBlock * sizeof(float)>>>(dev_input, dev_output);
-    // });  // 1 ms 근처
+    timedRun("Segmented", [&]() {
+        int numBlocks = sizeof(float)2; // size 나누기 2 주의
+        segmentedSumReductionKernel<<<numBlocks, threadsPerBlock,
+                                      threadsPerBlock * sizeof(float)>>>(dev_input, dev_output);
+    });  // 1 ms 근처
 
     float sumGpu = 0.0f;
     cudaMemcpy(&sumGpu, dev_output, sizeof(float), cudaMemcpyDeviceToHost); // 숫자 하나만 복사
