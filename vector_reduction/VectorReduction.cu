@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
     //  kernel<<<블럭수, 쓰레드수, 공유메모리크기>>>(...);
 
     timedRun("Segmented", [&]() {
-        int numBlocks = sizeof(float)/2; // size 나누기 2 주의
+        int numBlocks = size/threadsPerBlock * 2; // size 나누기 2 주의
         segmentedSumReductionKernel<<<numBlocks, threadsPerBlock,
                                       threadsPerBlock * sizeof(float)>>>(dev_input, dev_output);
     });  // 1 ms 근처
