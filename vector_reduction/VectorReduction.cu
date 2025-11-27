@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
     // 주의: size = threadsPerBlock * 2 라고 가정 (블럭 하나만 사용)
     timedRun("GPU Sum", [&]() {
         convergentSumReductionKernel<<<1, threadsPerBlock>>>(dev_input, dev_output); // 블럭이
-        하나일 때만 사용
+        // 하나일 때만 사용
     });
 
     // timedRun("GPU Sum", [&]() {
