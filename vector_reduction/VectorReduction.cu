@@ -34,8 +34,6 @@ void timedRun(const string name, const function<void()> &func) {
     cudaEventDestroy(stop);
 }
 
-// 교재: "Programming Massively Parallel Processors: A Hands-on Approach" 4th
-
 __global__ void atomicSumReductionKernel(float *input, float *output) {
 
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
@@ -56,7 +54,6 @@ __global__ void convergentSumReductionKernel(float *input,
 
     for (unsigned int stride = blockDim.x; stride >= 1; stride /= 2) {
         if (threadIdx.x < stride) {
-            // TODO: i를 사용해도 되고 threadIdx.x를 직접 사용해도 됩니다.
             input[i] = input[i] + input[i + stride]; // <- input 배열에 덮어쓰기
         }
         __syncthreads(); // <- 같은 블럭 안에 있는 쓰레드들 동기화
@@ -80,7 +77,7 @@ __global__ void sharedMemorySumReductionKernel(float *input, float *output) {
         __syncthreads();
 
         if (threadIdx.x < stride) {
-            // TODO:
+
             inputShared[t] = inputShared[t] + inputShared[t + stride];
 
         }
@@ -133,15 +130,15 @@ int main(int argc, char *argv[]) {
     // }); // 68 ms
 
     // 주의: size = threadsPerBlock * 2 라고 가정 (블럭 하나만 사용)
-    timedRun("GPU Sum", [&]() {
-        convergentSumReductionKernel<<<1, threadsPerBlock>>>(dev_input, dev_output); // 블럭이
-        // 하나일 때만 사용
-    });
-
     // timedRun("GPU Sum", [&]() {
-    //     sharedMemorySumReductionKernel<<<1, threadsPerBlock, threadsPerBlock * sizeof(float)>>>(
-    //         dev_input, dev_output); // 블럭이 하나일 때만 사용
+    //     convergentSumReductionKernel<<<1, threadsPerBlock>>>(dev_input, dev_output); // 블럭이
+    //     // 하나일 때만 사용
     // });
+
+    timedRun("GPU Sum", [&]() {
+        sharedMemorySumReductionKernel<<<1, threadsPerBlock, threadsPerBlock * sizeof(float)>>>(
+            dev_input, dev_output); // 블럭이 하나일 때만 사용
+    });
     //  kernel<<<블럭수, 쓰레드수, 공유메모리크기>>>(...);
 
     // timedRun("Segmented", [&]() {
