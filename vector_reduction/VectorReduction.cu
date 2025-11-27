@@ -139,10 +139,11 @@ int main(int argc, char *argv[]) {
     // }); // 68 ms
 
     // 주의: size = threadsPerBlock * 2 라고 가정 (블럭 하나만 사용)
-    // timedRun("GPU Sum", [&]() {
-    //     convergentSumReductionKernel<<<1, threadsPerBlock>>>(dev_input, dev_output); // 블럭이
-    //     // 하나일 때만 사용
-    // });
+    timedRun("GPU Sum", [&]() {
+        int numBlocks = size/(threadsPerBlock * 2); // size 나누기 2 주의
+        convergentSumReductionKernel<<<numBlocks, threadsPerBlock>>>(dev_input, dev_output); // 블럭이
+        // 하나일 때만 사용
+    });
 
     // timedRun("GPU Sum", [&]() {
     //     sharedMemorySumReductionKernel<<<1, threadsPerBlock, threadsPerBlock * sizeof(float)>>>(
@@ -150,11 +151,11 @@ int main(int argc, char *argv[]) {
     // });
     //  kernel<<<블럭수, 쓰레드수, 공유메모리크기>>>(...);
 
-    timedRun("Segmented", [&]() {
-        int numBlocks = size/(threadsPerBlock * 2); // size 나누기 2 주의
-        segmentedSumReductionKernel<<<numBlocks, threadsPerBlock,
-                                      threadsPerBlock * sizeof(float)>>>(dev_input, dev_output);
-    });  // 1 ms 근처
+    // timedRun("Segmented", [&]() {
+    //     int numBlocks = size/(threadsPerBlock * 2); // size 나누기 2 주의
+    //     segmentedSumReductionKernel<<<numBlocks, threadsPerBlock,
+    //                                   threadsPerBlock * sizeof(float)>>>(dev_input, dev_output);
+    // });  // 1 ms 근처
 
     float sumGpu = 0.0f;
     cudaMemcpy(&sumGpu, dev_output, sizeof(float), cudaMemcpyDeviceToHost); // 숫자 하나만 복사
