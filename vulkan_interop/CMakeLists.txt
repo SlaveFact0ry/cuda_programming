@@ -16,6 +16,9 @@ enable_language(CUDA)
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 
+# Find CUDA Toolkit
+find_package(CUDAToolkit 11.8 REQUIRED)
+
 # Set CUDA architectures for RTX 2080 (Turing, compute capability 7.5)
 set(CMAKE_CUDA_ARCHITECTURES 75)
 
@@ -23,6 +26,7 @@ set(CMAKE_CUDA_ARCHITECTURES 75)
 include_directories(
     ${Vulkan_INCLUDE_DIRS}
     ${GLFW3_INCLUDE_DIRS}
+    ${CUDA_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -40,8 +44,8 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
     ${GLFW3_LIBRARIES}
-    cuda
-    cudart
+    CUDA::cudart
+    CUDA::cuda_driver
 )
 
 # Compiler flags
