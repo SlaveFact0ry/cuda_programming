@@ -2,7 +2,9 @@
 
 #define GLFW_INCLUDE_VULKAN
 
+#ifdef _WIN64
 #include "WindowsSecurityAttributes.h"
+#endif
 
 #undef max
 #undef min
